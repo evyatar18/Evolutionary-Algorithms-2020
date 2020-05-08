@@ -1,36 +1,30 @@
 package ex1.textguesser;
 
-import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class TextChromosomeCreator implements Supplier<List<TextChromosome>> {
+import genetic_base.ChromoCreator;
 
-	private final int populationSize;
-	private final int textLength;
+public class TextChromosomeCreator implements ChromoCreator<TextChromosome> {
+
 	
 	private final Random random = new Random();
-
-	public TextChromosomeCreator(int populationSize, int textLength) {
-		this.populationSize = populationSize;
-		this.textLength = textLength;
+	private final Text targetText;
+	
+	public TextChromosomeCreator(Text targetText) {
+		this.targetText = targetText;
 	}
 	
 	@Override
-	public List<TextChromosome> get() {
-		List<TextChromosome> l = IntStream.range(0, populationSize).mapToObj((x) -> create()).collect(Collectors.toList());
-		return l;
-	}
-
-	private TextChromosome create() {
+	public TextChromosome createChromo() {
 		StringBuilder sb = new StringBuilder();
 		
-		for (int i = 0; i < textLength; ++i) {
-			sb.append((char) random.nextInt(256));
+		for (int i = 0; i < targetText.length(); ++i) {
+			sb.append(targetText.get(random.nextInt(
+					targetText.numberOfDifferentCharacters()))
+			);
 		}
 		
 		return new TextChromosome(sb.toString());
+
 	}
 }

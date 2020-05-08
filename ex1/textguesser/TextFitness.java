@@ -4,25 +4,15 @@ import genetic_base.FitnessMeter;
 
 public class TextFitness implements FitnessMeter<TextChromosome> {
 
-	private final String targetText;
+	private final Text targetText;
 
-	public TextFitness(String targetText) {
+	public TextFitness(Text targetText) {
 		this.targetText = targetText;
 	}
 	
 	@Override
 	public double fitness(TextChromosome chromo) {
-		int equalities = 0;
-		
-		for (int i = 0; i < targetText.length(); ++i) {
-			if (chromo.get(i) == targetText.charAt(i)) {
-				equalities++;
-			}
-		}
-		
-		int eq = equalities + 1;
-		
-		return Math.exp(eq);
+		return targetText.numberOfEqualities(chromo.getText());
 	}
 
 }

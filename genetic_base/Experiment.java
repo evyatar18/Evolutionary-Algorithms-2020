@@ -1,12 +1,9 @@
 package genetic_base;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class Experiment<T extends Chromosome> implements FitnessMeter<T>, Mutator<T>,
 	Crossover<T>, Selection<T> {
 
-	public final Supplier<List<T>> initialPopulationCreator;
+	public final ChromoCreator<T> initialPopulationCreator;
 	
 	private final FitnessMeter<T> fitness;
 	
@@ -15,7 +12,7 @@ public class Experiment<T extends Chromosome> implements FitnessMeter<T>, Mutato
 	private final Mutator<T> mutator;
 	private final Crossover<T> crossover;
 	
-	public Experiment(Supplier<List<T>> initialPopulationCreator, FitnessMeter<T> fitness,
+	public Experiment(ChromoCreator<T> initialPopulationCreator, FitnessMeter<T> fitness,
 			Mutator<T> mutator, Crossover<T> crossover, Selection<T> selection) {
 		this.initialPopulationCreator = initialPopulationCreator;
 
@@ -49,7 +46,7 @@ public class Experiment<T extends Chromosome> implements FitnessMeter<T>, Mutato
 		return selection.select();
 	}
 
-	public Population<T> createInitialPopulation() {
-		return new Population<T>(initialPopulationCreator.get(), fitness);
+	public Population<T> createInitialPopulation(int size) {
+		return new Population<T>(initialPopulationCreator.createChromos(size), fitness);
 	}
 }

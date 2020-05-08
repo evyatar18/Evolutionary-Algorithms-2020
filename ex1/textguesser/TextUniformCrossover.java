@@ -35,7 +35,7 @@ public class TextUniformCrossover implements Crossover<TextChromosome> {
 		return new ChromosomePair<TextChromosome>(
 				new TextChromosome(sb1.toString()),
 				new TextChromosome(sb2.toString())
-				);
+		);
 	}
 
 }

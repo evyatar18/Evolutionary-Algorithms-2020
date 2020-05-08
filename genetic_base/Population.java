@@ -18,7 +18,7 @@ public class Population<T extends Chromosome>{
 	}
 
 	private void sortByFitness() {
-		chromos.sort((ch1, ch2) -> Double.compare(getFitness(ch1), getFitness(ch2)));
+		chromos.sort((ch1, ch2) -> -Double.compare(getFitness(ch1), getFitness(ch2)));
 	}
 
 	private void calculateFitness(List<T> chromos, FitnessMeter<T> fitness) {
