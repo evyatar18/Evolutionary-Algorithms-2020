@@ -2,11 +2,24 @@ package genetic_base;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Function;
 
 import genetic_base.Crossover.ChromosomePair;
 
 public class RankSelection<T extends Chromosome> implements Selection<T> {
 
+	private final Function<Integer, Double> rankToNewFitness;
+
+	/**
+	 * Create an instance of {@link RankSelection}
+	 * @param rankToNewFitness given the rank ranging [0, populationSize), where the 0-th rank is of the
+	 * 	best chromosome and populationSize-1-th rank is of the worst chromosome
+	 * 	return a new fitness based on that ranking
+	 */
+	public RankSelection(Function<Integer, Double> rankToNewFitness) {
+		this.rankToNewFitness = rankToNewFitness;
+	}
+	
 	private class RankedFitness implements FitnessMeter<T> {
 		
 		private final Chromosome[] sortedChromos;
@@ -21,7 +34,7 @@ public class RankSelection<T extends Chromosome> implements Selection<T> {
 		@Override
 		public double fitness(T chromo) {
 			int index = Arrays.binarySearch(sortedChromos, chromo, chromoComp);
-			return (1.0 / (index + 1));
+			return rankToNewFitness.apply(index);
 		}
 		
 	}
@@ -43,4 +56,6 @@ public class RankSelection<T extends Chromosome> implements Selection<T> {
 		return rouletteWheel.select();
 	}
 
+	public static final Function<Integer, Double> EXPONENTIAL_FITNESS = i -> Math.pow(2, -i);
+	public static final Function<Integer, Double> HARMONIC_FITNESS = i -> 1.0 / (i + 1);
 }

@@ -15,6 +15,7 @@ import ex1.textguesser.TextChromosome;
 import ex1.textguesser.TextChromosomeCreator;
 import ex1.textguesser.TextDoublePointCrossover;
 import ex1.textguesser.TextFitness;
+import ex1.textguesser.TextMutationChanger2;
 import ex1.textguesser.TextMutator;
 import genetic_base.Elitism;
 import genetic_base.Experiment;
@@ -22,18 +23,17 @@ import genetic_base.GeneticUtils;
 import genetic_base.Nature;
 import genetic_base.Population;
 import genetic_base.RankSelection;
-import genetic_base.RouletteWheelSelection;
 import genetic_base.listeners.FitnessReporter;
 import global.Variable;
 
 public class Main {
 
-//	private static final String text = "The New Testament is a collection of Christian texts originally written in "
-//			+ "the Koine Greek language, at different times by various different authors. While the "
-//			+ "Old Testament canon varies somewhat between different Christian denominations, "
-//			+ "the 27-book canon of the New Testament has been almost universally recognized "
-//			+ "within Christianity since at least Late Antiquity. Thus, in almost "
-//			+ "all Christian traditions today, the New Testament consists of 27 books:";
+	private static final String text2 = "The New Testament is a collection of Christian texts originally written in "
+			+ "the Koine Greek language, at different times by various different authors. While the "
+			+ "Old Testament canon varies somewhat between different Christian denominations, "
+			+ "the 27-book canon of the New Testament has been almost universally recognized "
+			+ "within Christianity since at least Late Antiquity. Thus, in almost "
+			+ "all Christian traditions today, the New Testament consists of 27 books:";
 	
 	private static final String text = "to be or not to be that is the question."
 			+ " whether tis nobler in the mind to suffer."
@@ -45,7 +45,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		runChessExperiment(8);
-		runTextExperiment(text);
+//		runTextExperiment(text);
 //		System.out.println(calculateExpectedNumberOfIterations(new Text(text)));
 	}
 	
@@ -53,18 +53,18 @@ public class Main {
 		Experiment<ChessChromo> chessExperiment = new Experiment<ChessChromo>(
 				new ChessChromoCreator(numberOfQueens), 
 				new ChessFitness(),
-				new ChessMutator(8),
+				new ChessMutator(2),
 				new ChessUniformCrossover(),
-				new RouletteWheelSelection<ChessChromo>());
+				new RankSelection<ChessChromo>(RankSelection.HARMONIC_FITNESS));
 		
 		Nature<ChessChromo> nature = new Nature<>(chessExperiment, (pop) -> 
 				pop.best().numberOfCollisions() == 0);
 		
-		nature.addListener((pop, ended) -> printChessInfo(pop));
+		nature.addListener(Main::printChessInfo);
 		
 		try (FileOutputStream fos = new FileOutputStream("chess_experiment.txt")) {
 			nature.addListener(new FitnessReporter<ChessChromo>(fos));
-			nature.run(10, new Variable<>(0.02), new Variable<>(0.75));
+			nature.run(50, new Variable<>(0.1), new Variable<>(0.75));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -72,12 +72,18 @@ public class Main {
 		}
 	}
 	
-	private static void printChessInfo(Population<ChessChromo> pop) {
-		ChessChromo chromo = pop.best();
-		System.out.println("chromo: " + chromo);
-		System.out.println("number of queens: " + chromo.numberOfQueens());
-		System.out.println("number of collisons: " + chromo.numberOfCollisions());
-		System.out.println("fitness: " + pop.getFitness(chromo));
+	private static int numItersChess = 0;
+	
+	private static void printChessInfo(Population<ChessChromo> pop, boolean ended) {
+		if (numItersChess % 10 == 0 || ended) {
+			ChessChromo chromo = pop.best();
+			System.out.println("iteration: " + numItersChess);
+			System.out.println("chromo: " + chromo);
+			System.out.println("number of queens: " + chromo.numberOfQueens());
+			System.out.println("number of collisons: " + chromo.numberOfCollisions());
+			System.out.println("fitness: " + pop.getFitness(chromo));
+		}
+		numItersChess++;
 	}
 	
 	private static int calculateExpectedNumberOfIterations(Text text) {
@@ -94,16 +100,16 @@ public class Main {
 		Text target = new Text(text);
 		TextFitness fitness = new TextFitness(target);
 		
-		// in average, do 5 character changes per mutation
+		// in average, do 1 character change per mutation
 		Variable<Double> characterMutationRate = new Variable<Double>(
-				1.0 / text.length());
+				1.2 / text.length());
 		
 		Experiment<TextChromosome> textExperiment = new Experiment<TextChromosome>(
 				new TextChromosomeCreator(target), 
 				fitness,
 				new TextMutator(target, characterMutationRate),
 				new TextDoublePointCrossover(),
-				new RankSelection<TextChromosome>());
+				new RankSelection<TextChromosome>(RankSelection.EXPONENTIAL_FITNESS));
 		
 		Nature<TextChromosome> nature = new Nature<>(textExperiment,
 				(pop) -> pop.best().getText().contentEquals(text));
@@ -113,8 +119,8 @@ public class Main {
 		try (FileOutputStream fos = new FileOutputStream("text_experiment.txt")) {
 			nature.addListener(new FitnessReporter<TextChromosome>(fos));
 			
-			int N = 100;
-			Variable<Double> mutationRate = new Variable<Double>(0.5);
+			int N = 35;
+			Variable<Double> mutationRate = new Variable<Double>(1.0);
 			Variable<Double> crossoverRate = new Variable<>(0.75);
 			
 			Population<TextChromosome> lastPop = nature.run(N,
@@ -132,13 +138,14 @@ public class Main {
 	private static int generationNumber = 0;
 
 	private static void printTextInfo(Population<TextChromosome> pop, boolean lastPop) {
-		
 		if (generationNumber % 100 == 0 || lastPop) {
 			System.out.println("Current generation: " + generationNumber);
 			TextChromosome chromo = pop.best();
 			System.out.println("best chromo: " + chromo.getText());
 			System.out.println("best fitness: " + pop.getFitness(chromo));
-			System.out.println("avg fitness:" + GeneticUtils.averageFitness(pop));
+			System.out.println("avg fitness: " + GeneticUtils.averageFitness(pop));
+			
+			System.out.println("gen*pop size = " + (generationNumber * pop.size()));
 		}
 		
 		generationNumber++;

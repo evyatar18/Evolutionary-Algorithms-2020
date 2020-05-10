@@ -23,12 +23,12 @@ public class TextMutationChanger2 implements GenerationListener<TextChromosome> 
 		
 		double avgInvalidText = (fitness.bestFitness() - avgFitness) / fitness.bestFitness();
 		
-		double bestInvalidText = (fitness.bestFitness() - newPopulation.getFitness(newPopulation.best()));
+//		double bestInvalidText = (fitness.bestFitness() - newPopulation.getFitness(newPopulation.best()));
 		
 		
-		if (bestInvalidText < 0.1 && avgInvalidText < 0.1) {
-			mutationRate.set(bestInvalidText);
-		}
+//		if (bestInvalidText < 0.1 && avgInvalidText < 0.1) {
+			mutationRate.set(avgInvalidText / 5);
+//		}
 	}
 
 }
