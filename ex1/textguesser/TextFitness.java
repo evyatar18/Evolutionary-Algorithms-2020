@@ -12,7 +12,14 @@ public class TextFitness implements FitnessMeter<TextChromosome> {
 	
 	@Override
 	public double fitness(TextChromosome chromo) {
-		return targetText.numberOfEqualities(chromo.getText());
+		double numOfEqs = targetText.numberOfEqualities(chromo.getText()); 
+//		return numOfEqs*numOfEqs*numOfEqs;
+		return numOfEqs;
+	}
+	
+	@Override
+	public double bestFitness() {
+		return targetText.length();
 	}
 
 }

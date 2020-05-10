@@ -23,9 +23,11 @@ public class GeneticUtils {
 				})
 				.reduce(0.0, (x, y) -> x + y);
 		
+		double sumOfSquaresAvged = sumOfSquares / population.size();
+		
 		double avg = averageFitness(population);
 		double avgSquared = avg * avg;
 		
-		return (avgSquared - sumOfSquares) / population.size();
+		return Math.sqrt(sumOfSquaresAvged - avgSquared);
 	}
 }

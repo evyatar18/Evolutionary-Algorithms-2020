@@ -3,6 +3,7 @@ package ex1;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 import ex1.chess.ChessChromo;
 import ex1.chess.ChessChromoCreator;
@@ -12,15 +13,17 @@ import ex1.chess.ChessUniformCrossover;
 import ex1.textguesser.Text;
 import ex1.textguesser.TextChromosome;
 import ex1.textguesser.TextChromosomeCreator;
+import ex1.textguesser.TextDoublePointCrossover;
 import ex1.textguesser.TextFitness;
 import ex1.textguesser.TextMutator;
-import ex1.textguesser.TextUniformCrossover;
+import genetic_base.Elitism;
 import genetic_base.Experiment;
+import genetic_base.GeneticUtils;
 import genetic_base.Nature;
 import genetic_base.Population;
+import genetic_base.RankSelection;
 import genetic_base.RouletteWheelSelection;
 import genetic_base.listeners.FitnessReporter;
-import genetic_base.listeners.MutationChanger;
 import global.Variable;
 
 public class Main {
@@ -41,8 +44,9 @@ public class Main {
 			+ " the heartache and the thousand natural shocks.";
 	
 	public static void main(String[] args) {
-//		runChessExperiment(8);
+		runChessExperiment(8);
 		runTextExperiment(text);
+//		System.out.println(calculateExpectedNumberOfIterations(new Text(text)));
 	}
 	
 	private static void runChessExperiment(int numberOfQueens) {
@@ -60,7 +64,7 @@ public class Main {
 		
 		try (FileOutputStream fos = new FileOutputStream("chess_experiment.txt")) {
 			nature.addListener(new FitnessReporter<ChessChromo>(fos));
-			nature.run(100, new Variable<>(0.01), new Variable<>(0.75));
+			nature.run(10, new Variable<>(0.02), new Variable<>(0.75));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -75,31 +79,49 @@ public class Main {
 		System.out.println("number of collisons: " + chromo.numberOfCollisions());
 		System.out.println("fitness: " + pop.getFitness(chromo));
 	}
+	
+	private static int calculateExpectedNumberOfIterations(Text text) {
+		int diffChars = text.numberOfDifferentCharacters();
+		int chars = text.length();
+		int combos = chars * diffChars;
+		
+		return (int) IntStream.range(0, text.length())			
+			.mapToDouble(i -> (combos / (chars - (double) i)))
+			.sum();
+	}
 
 	private static void runTextExperiment(String text) {
 		Text target = new Text(text);
-		Variable<Double> mutationRate2 = new Variable<Double>(20.0 / text.length());
+		TextFitness fitness = new TextFitness(target);
+		
+		// in average, do 5 character changes per mutation
+		Variable<Double> characterMutationRate = new Variable<Double>(
+				1.0 / text.length());
 		
 		Experiment<TextChromosome> textExperiment = new Experiment<TextChromosome>(
 				new TextChromosomeCreator(target), 
-				new TextFitness(target),
-				new TextMutator(target, mutationRate2),
-				new TextUniformCrossover(),
-				new RouletteWheelSelection<TextChromosome>());
+				fitness,
+				new TextMutator(target, characterMutationRate),
+				new TextDoublePointCrossover(),
+				new RankSelection<TextChromosome>());
 		
 		Nature<TextChromosome> nature = new Nature<>(textExperiment,
 				(pop) -> pop.best().getText().contentEquals(text));
 		
-		nature.addListener((pop, lastPop) -> printTextInfo(pop));
-		nature.addListener(new MutationChanger<TextChromosome>(mutationRate2));
+		nature.addListener(Main::printTextInfo);
 		
 		try (FileOutputStream fos = new FileOutputStream("text_experiment.txt")) {
 			nature.addListener(new FitnessReporter<TextChromosome>(fos));
 			
-			Variable<Double> mutationRate = new Variable<Double>(0.03);
-			nature.addListener(new MutationChanger<>(mutationRate));
+			int N = 100;
+			Variable<Double> mutationRate = new Variable<Double>(0.5);
+			Variable<Double> crossoverRate = new Variable<>(0.75);
 			
-			nature.run(1000, mutationRate, new Variable<>(0.75));
+			Population<TextChromosome> lastPop = nature.run(N,
+					mutationRate,
+					crossoverRate);
+			
+			System.out.println(target.numberOfDifferentCharacters());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -109,13 +131,14 @@ public class Main {
 	
 	private static int generationNumber = 0;
 
-	private static void printTextInfo(Population<TextChromosome> pop) {
+	private static void printTextInfo(Population<TextChromosome> pop, boolean lastPop) {
 		
-		if (generationNumber % 30 == 0) {
+		if (generationNumber % 100 == 0 || lastPop) {
 			System.out.println("Current generation: " + generationNumber);
 			TextChromosome chromo = pop.best();
-			System.out.println("chromo: " + chromo.getText());
-			System.out.println("fitness: " + pop.getFitness(chromo));
+			System.out.println("best chromo: " + chromo.getText());
+			System.out.println("best fitness: " + pop.getFitness(chromo));
+			System.out.println("avg fitness:" + GeneticUtils.averageFitness(pop));
 		}
 		
 		generationNumber++;

@@ -1,6 +1,8 @@
 package genetic_base;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -36,42 +38,62 @@ public class Nature<T extends Chromosome> {
 		}
 	}
 	
-	public T run(int populationSize,
-			Variable<Double> mutationChance,
-			Variable<Double> crossoverChance) {
+	public Population<T> run(int populationSize, Variable<Double> mutationChance,
+			Variable<Double> crossoverChance, Collection<PopulationTransformer<T>> transformers) {
+		return run(populationSize, mutationChance, crossoverChance,
+				(PopulationTransformer<T>[]) 
+				transformers.toArray(x -> new PopulationTransformer[x]));
+	}
+	
+	public Population<T> run(int populationSize, Variable<Double> mutationChance,
+			Variable<Double> crossoverChance, PopulationTransformer<T>... transformers) {
 		Population<T> population = experiment.createInitialPopulation(populationSize);
-		T best = population.best();
 		
 		while (!endDecider.shouldEnd(population)) {
 			notifyListeners(population, false);
 			List<T> newPopulation = new ArrayList<T>();
 			
-			while (newPopulation.size() < population.size()) {
-				// do selection
-				experiment.setPopulation(population);
-				ChromosomePair<T> pair = experiment.select();
-				
-				// do crossover
-				if (random.nextDouble() < crossoverChance.get()) {
-					pair = experiment.crossover(pair.c1, pair.c2);
-				}
-				
-				// do mutation and add to new population
-				for (T chromo : pair) {
-					if (random.nextDouble() < mutationChance.get()) {
-						chromo = experiment.mutate(chromo);
-					}
-					
-					newPopulation.add(chromo);
-				}
+			for (int i = 0; transformers != null && i < transformers.length &&
+					newPopulation.size() < populationSize; i++) {
+				newPopulation.addAll(transformers[i].transform(population));
 			}
+			
+			newPopulation.addAll(normalRun(population, mutationChance, crossoverChance,
+					populationSize - newPopulation.size()));
 			
 			population = new Population<T>(newPopulation, experiment);
 		}
 		
 		notifyListeners(population, true);
 		
-		return best;
+		return population;
+	}
+	
+	private Collection<T> normalRun(Population<T> current, Variable<Double> mutationChance,
+			Variable<Double> crossoverChance, int neededChromos) {
+		List<T> out = new ArrayList<>(neededChromos);
+		experiment.setPopulation(current);
+		
+		while (out.size() < neededChromos) {
+			// do selection
+			ChromosomePair<T> pair = experiment.select();
+			
+			// do crossover
+			if (random.nextDouble() < crossoverChance.get()) {
+				pair = experiment.crossover(pair.c1, pair.c2);
+			}
+			
+			// do mutation and add to new population
+			for (T chromo : pair) {
+				if (random.nextDouble() < mutationChance.get()) {
+					chromo = experiment.mutate(chromo);
+				}
+				
+				out.add(chromo);
+			}
+		}
+		
+		return out;
 	}
 	
 }

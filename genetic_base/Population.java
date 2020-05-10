@@ -1,5 +1,6 @@
 package genetic_base;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ public class Population<T extends Chromosome>{
 
 	private final List<T> chromos;
 	private final Map<T, Double> fitness;
+	private final Comparator<T> sortComparator = (ch1, ch2) ->
+		-Double.compare(getFitness(ch1), getFitness(ch2));
 	
 	public Population(List<T> chromos, FitnessMeter<T> fitness) {
 		this.chromos = chromos;
@@ -16,9 +19,13 @@ public class Population<T extends Chromosome>{
 		calculateFitness(chromos, fitness);
 		sortByFitness();
 	}
-
+	
 	private void sortByFitness() {
-		chromos.sort((ch1, ch2) -> -Double.compare(getFitness(ch1), getFitness(ch2)));
+		chromos.sort(sortComparator);
+	}
+	
+	public Comparator<T> getComparator() {
+		return sortComparator;
 	}
 
 	private void calculateFitness(List<T> chromos, FitnessMeter<T> fitness) {

@@ -22,8 +22,9 @@ public class MutationChanger<T extends Chromosome> implements GenerationListener
 		
 		mutationRate.set(original);
 		
-		if (stdDev < 10) {
+		if (stdDev < 2 && mutationRate.get() < 1) {
 			mutationRate.set(mutationRate.get() * 2);
+//			System.out.printf("multiplied mutation rate: %f\n", mutationRate.get());
 		}
 	}
 
