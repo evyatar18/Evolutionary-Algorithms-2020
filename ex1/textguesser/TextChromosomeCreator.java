@@ -25,6 +25,5 @@ public class TextChromosomeCreator implements ChromoCreator<TextChromosome> {
 		}
 		
 		return new TextChromosome(sb.toString());
-
 	}
 }

@@ -1,7 +1,6 @@
 package genetic_base;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -38,6 +37,7 @@ public class Nature<T extends Chromosome> {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Population<T> run(int populationSize, Variable<Double> mutationChance,
 			Variable<Double> crossoverChance, Collection<PopulationTransformer<T>> transformers) {
 		return run(populationSize, mutationChance, crossoverChance,
@@ -45,8 +45,10 @@ public class Nature<T extends Chromosome> {
 				transformers.toArray(x -> new PopulationTransformer[x]));
 	}
 	
-	public Population<T> run(int populationSize, Variable<Double> mutationChance,
-			Variable<Double> crossoverChance, PopulationTransformer<T>... transformers) {
+	@SafeVarargs
+	public final Population<T> run(int populationSize, Variable<Double> mutationChance,
+			Variable<Double> crossoverChance,
+			PopulationTransformer<T>... transformers) {
 		Population<T> population = experiment.createInitialPopulation(populationSize);
 		
 		while (!endDecider.shouldEnd(population)) {
