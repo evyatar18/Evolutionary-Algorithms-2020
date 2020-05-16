@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import genetic_base.experiment.Chromosome;
+import genetic_base.experiment.FitnessMeter;
+
 public class Population<T extends Chromosome>{
 
 	private final List<T> chromos;

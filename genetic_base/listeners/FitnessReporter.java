@@ -3,10 +3,10 @@ package genetic_base.listeners;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import genetic_base.Chromosome;
 import genetic_base.GenerationListener;
 import genetic_base.GeneticUtils;
 import genetic_base.Population;
+import genetic_base.experiment.Chromosome;
 
 public class FitnessReporter<T extends Chromosome> implements GenerationListener<T> {
 	

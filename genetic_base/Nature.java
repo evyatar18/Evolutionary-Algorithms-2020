@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import genetic_base.Crossover.ChromosomePair;
+import genetic_base.experiment.Chromosome;
+import genetic_base.experiment.Experiment;
+import genetic_base.experiment.Crossover.ChromosomePair;
 import global.Variable;
 
 public class Nature<T extends Chromosome> {

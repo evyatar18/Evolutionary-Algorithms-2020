@@ -1,12 +1,12 @@
-package genetic_base;
+package genetic_base.experiment;
 
 import java.util.Iterator;
 
 public interface Crossover<T extends Chromosome> {
 
 	public class ChromosomePair<T> implements Iterable<T> {
-		final T c1;
-		final T c2;
+		public final T c1;
+		public final T c2;
 		
 		public ChromosomePair(T c1, T c2) {
 			this.c1 = c1;

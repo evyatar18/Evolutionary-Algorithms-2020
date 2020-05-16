@@ -1,6 +1,6 @@
 package ex1.chess;
 
-import genetic_base.Chromosome;
+import genetic_base.experiment.Chromosome;
 
 public class ChessChromo implements Chromosome {
 

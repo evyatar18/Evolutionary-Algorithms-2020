@@ -1,5 +1,7 @@
 package genetic_base;
 
+import genetic_base.experiment.Chromosome;
+
 public class GeneticUtils {
 
 	public static <T extends Chromosome> double bestFitness(final Population<T> population) {

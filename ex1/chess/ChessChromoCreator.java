@@ -2,7 +2,7 @@ package ex1.chess;
 
 import java.util.Random;
 
-import genetic_base.ChromoCreator;
+import genetic_base.experiment.ChromoCreator;
 
 public class ChessChromoCreator implements ChromoCreator<ChessChromo> {
 

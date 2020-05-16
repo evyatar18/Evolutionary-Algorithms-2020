@@ -2,7 +2,7 @@ package ex1.textguesser;
 
 import java.util.Random;
 
-import genetic_base.Crossover;
+import genetic_base.experiment.Crossover;
 
 public class TextUniformCrossover implements Crossover<TextChromosome> {
 

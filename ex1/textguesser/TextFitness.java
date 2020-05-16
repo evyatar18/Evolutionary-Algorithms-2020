@@ -1,6 +1,6 @@
 package ex1.textguesser;
 
-import genetic_base.FitnessMeter;
+import genetic_base.experiment.FitnessMeter;
 
 public class TextFitness implements FitnessMeter<TextChromosome> {
 

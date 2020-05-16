@@ -1,4 +1,4 @@
-package genetic_base;
+package genetic_base.experiment;
 
 public interface Mutator<T extends Chromosome> {
 

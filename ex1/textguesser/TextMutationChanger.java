@@ -31,7 +31,7 @@ public class TextMutationChanger implements GenerationListener<TextChromosome> {
 		double first = bestFitness.remove();
 		double last = bestFitness.peekLast();
 		
-		double slope = (last-first) / QUEUE_SIZE;
+		double slope = (last - first) / QUEUE_SIZE;
 		System.out.println("slope: " + slope);
 		if (slope < 1) {
 			mutationRate.set(original * 2);

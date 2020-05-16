@@ -2,7 +2,7 @@ package ex1.textguesser;
 
 import java.util.Random;
 
-import genetic_base.Mutator;
+import genetic_base.experiment.Mutator;
 import global.Variable;
 
 public class TextMutator implements Mutator<TextChromosome> {
@@ -16,11 +16,11 @@ public class TextMutator implements Mutator<TextChromosome> {
 		this.charMutationChance = charMutationChance;
 	}
 	
-	
+
 	@Override
 	public TextChromosome mutate(TextChromosome chromo) {
 		StringBuilder mutatedTextBuilder = new StringBuilder();
-		
+				
 		for (int i = 0; i < chromo.length(); i++) {
 			char appended;
 			

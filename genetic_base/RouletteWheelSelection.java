@@ -3,7 +3,9 @@ package genetic_base;
 import java.util.List;
 import java.util.Random;
 
-import genetic_base.Crossover.ChromosomePair;
+import genetic_base.experiment.Chromosome;
+import genetic_base.experiment.Selection;
+import genetic_base.experiment.Crossover.ChromosomePair;
 
 public class RouletteWheelSelection<T extends Chromosome> implements Selection<T> {
 

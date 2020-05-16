@@ -1,6 +1,6 @@
 package ex1.chess;
 
-import genetic_base.FitnessMeter;
+import genetic_base.experiment.FitnessMeter;
 
 public class ChessFitness implements FitnessMeter<ChessChromo> {
 

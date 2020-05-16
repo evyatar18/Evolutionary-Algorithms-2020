@@ -1,4 +1,6 @@
-package genetic_base;
+package genetic_base.experiment;
+
+import genetic_base.Population;
 
 public class Experiment<T extends Chromosome> implements FitnessMeter<T>, Mutator<T>,
 	Crossover<T>, Selection<T> {

@@ -1,6 +1,6 @@
 package ex1.textguesser;
 
-import genetic_base.Chromosome;
+import genetic_base.experiment.Chromosome;
 
 public class TextChromosome implements Chromosome {
 

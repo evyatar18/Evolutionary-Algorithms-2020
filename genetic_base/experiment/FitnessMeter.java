@@ -1,4 +1,4 @@
-package genetic_base;
+package genetic_base.experiment;
 
 public interface FitnessMeter<T extends Chromosome> {
 	

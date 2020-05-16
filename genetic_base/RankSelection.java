@@ -3,9 +3,11 @@ package genetic_base;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
-import genetic_base.Crossover.ChromosomePair;
+import genetic_base.experiment.Chromosome;
+import genetic_base.experiment.FitnessMeter;
+import genetic_base.experiment.Selection;
+import genetic_base.experiment.Crossover.ChromosomePair;
 
 public class RankSelection<T extends Chromosome> implements Selection<T> {
 

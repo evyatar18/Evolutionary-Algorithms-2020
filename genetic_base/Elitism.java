@@ -2,6 +2,8 @@ package genetic_base;
 
 import java.util.Collection;
 
+import genetic_base.experiment.Chromosome;
+
 public class Elitism<T extends Chromosome> implements PopulationTransformer<T> {
 
 	private final int numOfTaken;

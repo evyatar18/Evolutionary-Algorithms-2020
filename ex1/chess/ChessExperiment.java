@@ -4,31 +4,34 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import genetic_base.Experiment;
 import genetic_base.Nature;
 import genetic_base.Population;
 import genetic_base.RankSelection;
+import genetic_base.experiment.Experiment;
 import genetic_base.listeners.FitnessReporter;
 import global.Variable;
 
 public class ChessExperiment {
 
-	public static void run(int numberOfQueens) {
+	public static void run(int numberOfQueens, boolean silent) {
 		Experiment<ChessChromo> chessExperiment = new Experiment<ChessChromo>(
 				new ChessChromoCreator(numberOfQueens), 
 				new ChessFitness(),
 				new ChessMutator2(new Variable<>(2.0 / numberOfQueens)),
-				new ChessUniformCrossover(),
-				new RankSelection<ChessChromo>(RankSelection.HARMONIC_FITNESS));
+				new ChessDoublePointCrossover(),
+				new RankSelection<>(RankSelection.EXPONENTIAL_FITNESS)
+			);
 		
 		Nature<ChessChromo> nature = new Nature<>(chessExperiment, (pop) -> 
 				pop.best().numberOfCollisions() == 0);
 		
-		nature.addListener(ChessExperiment::printChessInfo);
+		if (!silent) {
+			nature.addListener(ChessExperiment::printChessInfo);
+		}
 		
 		try (FileOutputStream fos = new FileOutputStream("chess_experiment.txt")) {
 			nature.addListener(new FitnessReporter<ChessChromo>(fos));
-			nature.run(100, new Variable<>(0.3), new Variable<>(0.75));
+			nature.run(80, new Variable<>(0.3), new Variable<>(0.9));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -39,7 +42,7 @@ public class ChessExperiment {
 	private static int numIters = 0;
 	
 	private static void printChessInfo(Population<ChessChromo> pop, boolean ended) {
-		if (numIters % 100 == 0 || ended) {
+		if (numIters % 1000 == 0 || ended) {
 			ChessChromo chromo = pop.best();
 			System.out.println("iteration: " + numIters);
 			System.out.println("chromo: " + chromo);

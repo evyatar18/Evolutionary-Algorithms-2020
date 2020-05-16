@@ -1,4 +1,4 @@
-package genetic_base;
+package genetic_base.experiment;
 
 import java.util.List;
 import java.util.stream.Collectors;

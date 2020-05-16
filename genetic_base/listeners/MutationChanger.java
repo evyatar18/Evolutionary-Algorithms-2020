@@ -1,9 +1,9 @@
 package genetic_base.listeners;
 
-import genetic_base.Chromosome;
 import genetic_base.GenerationListener;
 import genetic_base.GeneticUtils;
 import genetic_base.Population;
+import genetic_base.experiment.Chromosome;
 import global.Variable;
 
 public class MutationChanger<T extends Chromosome> implements GenerationListener<T> {

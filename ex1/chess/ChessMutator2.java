@@ -2,7 +2,7 @@ package ex1.chess;
 
 import java.util.Random;
 
-import genetic_base.Mutator;
+import genetic_base.experiment.Mutator;
 import global.Variable;
 
 public class ChessMutator2 implements Mutator<ChessChromo> {
