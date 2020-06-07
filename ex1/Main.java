@@ -20,13 +20,18 @@ public class Main {
 	
 	public static void main(String[] args) {
 		final int numberOfQueens = 8;
+		final int times = 100;
 		
-		runAndMeasure("chess evolution", () -> ChessExperiment.run(numberOfQueens, false));
+		long m1 = runAndMeasure("chess evolution", () -> ChessExperiment.run(numberOfQueens, false), times);
 		printSpaces();
-		runAndMeasure("chess brute force", () -> RandomQueenGuesser.guess(numberOfQueens));
+		long m2 =runAndMeasure("chess brute force", () -> RandomQueenGuesser.guess(numberOfQueens), times);
 		printSpaces();
 		
-		runAndMeasure("text evolution", () -> TextExperiment.run(new Text(text), false));
+		long m3 = runAndMeasure("text evolution", () -> TextExperiment.run(new Text(text), false), times);
+		
+		System.out.println("chess evolution: " + m1);
+		System.out.println("chess brute force: " + m2);
+		System.out.println("text evolution: " + m3);
 	}
 	
 	private static void printSpaces() {
@@ -35,15 +40,21 @@ public class Main {
 		}
 	}
 	
-	private static void runAndMeasure(String name, Runnable r) {
+	private static long runAndMeasure(String name, Runnable r, int times) {
 		Instant start = Instant.now();
-		r.run();
+		for (int i = 0; i < times; i++) {
+			r.run();
+		}
 		Instant end = Instant.now();
 		
 		Duration d = Duration.between(start, end);
 		
+		long avgMillis = d.toMillis()/times;
+		
 		System.out.println();
 		System.out.println();
-		System.out.printf(">>>>>>> %s took: %dms\n", name, d.toMillis());
+		System.out.printf(">>>>>>> %s took: %dms\n", name, avgMillis);
+		
+		return avgMillis;
 	}
 }
