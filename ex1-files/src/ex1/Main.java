@@ -20,7 +20,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		final int numberOfQueens = 8;
-		final int times = 100;
+		final int times = 1;
 		
 		long m1 = runAndMeasure("chess evolution", () -> ChessExperiment.run(numberOfQueens, false), times);
 		printSpaces();
