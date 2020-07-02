@@ -101,30 +101,31 @@ def do_tests(model, out_file):
 
 def do_validation(model):
     validate_size = 50000
-    validate_loader = data.DataLoader(get_data("validate.csv", max_len=validate_size), batch_size=validate_size,
+    validate_loader = data.DataLoader(get_data("validate.csv", max_len=validate_size),
+                                      batch_size=validate_size,
                                       pin_memory=True)
     print(f"finished loading {validate_size} validate lines")
 
     tester = functools.partial(eval_sets, sets=[
         ("validate", validate_loader)])
 
-    tester(model=model)
+    tester(model=model, file_out="validation_out.txt")
 
 
 save_path = "my_model_4"
 test_out = "test-results.txt"
 
-model = Model().to(device)
-do_training(model, save_path)
-do_tests(model, test_out)
+# model = Model().to(device)
+# do_training(model, save_path)
+# do_tests(model, test_out)
 
-# model = Model.Load(save_path).to(device)
+model = Model.Load(save_path)
 # model = Model2()
 # model.load_state_dict(torch.load("my-model"))
-# model.eval()
-# print("finishing loading model")
-# do_validation(model)
-# do_tests(model, test_out)
+model.eval()
+print("finished loading model")
+do_validation(model)
+do_tests(model, test_out)
 
 
 # repeats = 10

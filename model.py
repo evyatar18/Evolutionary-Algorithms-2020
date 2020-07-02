@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from const import num_params, length_params, total_inputs
+from const import num_params, length_params, total_inputs, device
 
 
 class Model(nn.Module):
@@ -31,9 +31,10 @@ class Model(nn.Module):
         layers = []
         for i in range(len(layer_sizes) - 1):
             layers.append(nn.Linear(layer_sizes[i], layer_sizes[i + 1]))
-            layers.append(nn.Dropout(0.02))
+            # layers.append(nn.Dropout(0.02))
             layers.append(nn.BatchNorm1d(layer_sizes[i + 1]))
 
+        # layers.pop()
         layers.pop()
 
         self.layers = layers
@@ -54,14 +55,15 @@ class Model(nn.Module):
         x = self.layers[-1](x)
 
         if not self.training:
-            x = self.softmax(x)
+            # x = self.softmax(x)
+            pass
 
         return x
 
     @staticmethod
     def Load(path):
         model = Model()
-        model.load_state_dict(torch.load(path))
+        model.load_state_dict(torch.load(path, map_location=device))
         model.eval()
         return model
 

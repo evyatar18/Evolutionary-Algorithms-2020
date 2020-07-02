@@ -3,6 +3,7 @@ import functools
 import const
 from timer import Timer
 
+
 def train_on_sample(model, x, y, loss_fn, optimizer):
     optimizer.zero_grad()
 
@@ -60,11 +61,17 @@ def train_one_cycle(model, train_set, loss_fn, optimizer, max_batches=0):
     return summed_loss / iters
 
 
-def evaluate(model, test_set, predictor):
+def float_formatter(number):
+    return "{:.2f}".format(number)
+
+
+def evaluate(model, test_set, predictor, file_out=None):
     corrects = 0
     N = 0
 
     model.eval()
+
+    out_lines = []
 
     for x, y in test_set:
         x, y = x.to(const.device), y.to(const.device)
@@ -76,6 +83,18 @@ def evaluate(model, test_set, predictor):
         corrects += predictions.eq(y).sum().item()
         N += y.size()[0]
 
+        if file_out:
+            for prediction, value in zip(y_hat, y):
+                line = prediction.tolist() + [1.0 * value]
+
+                out_lines.append(",".join(list(map(float_formatter, line))))
+
+    if file_out:
+        with open(file_out, "w") as f:
+            for line in out_lines:
+                f.write(line)
+                f.write("\n")
+
     return N, corrects
 
 
@@ -86,13 +105,18 @@ def evaluate_certainty(certainty):
     return functools.partial(evaluate, predictor=lambda y: y[:, 1].gt(certainty).int())
 
 
-def eval_sets(model, sets):
+def prediction_decider(y):
+    return (y[:, 1] - y[:, 0]).gt(0.35).int()
+
+
+def eval_sets(model, sets, file_out=None):
     accuracy = {}
 
-    eval = evaluate_certainty(0.5)
+    # eval = evaluate_certainty(0.5)
+    eval = functools.partial(evaluate, predictor=prediction_decider)
 
     for name, loader in sets:
-        N, corrects = eval(model=model, test_set=loader)
+        N, corrects = eval(model=model, test_set=loader, file_out=file_out)
         acc = corrects / N
 
         accuracy[name] = acc
@@ -109,7 +133,10 @@ def predict(model, set):
     for x, _ in set:
         x = x.to(const.device)
         y = model(x)
-        y = y[:, 1].gt(0.5).int()
+        # y = y[:, 1].gt(0.5).int()
+        # y = (y[:, 1] - y[:, 0]).gt(0.5).int()
+        y = prediction_decider(y)
+
         predictions += y.tolist()
 
     return predictions
