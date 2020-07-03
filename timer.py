@@ -11,6 +11,10 @@ class Timer:
     def reset(self):
         self.__init__()
 
+    def restart(self):
+        self.reset()
+        self.start()
+
     def start(self):
         self.start_time = self.current_time()
         self.started = True
@@ -26,5 +30,8 @@ class Timer:
         else:
             return self.stop_time - self.start_time
 
+    def __str__(self):
+        return f"{self.time_passed()}s"
+
     def print(self, start_msg = ""):
-        print(start_msg, self.time_passed(), "seconds passed.")
+        print(start_msg, self)

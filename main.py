@@ -40,7 +40,7 @@ def write_predictions(filename, predictions):
 
 def do_training(model, save_path):
     real_train_size = 700000
-    train_size = int(0.8 * real_train_size)
+    train_size = int(0.2 * real_train_size)
     train_loader = data.DataLoader(get_data("train.csv", max_len=train_size), batch_size=min(train_size // 200, 2000),
                                    shuffle=False, pin_memory=True, num_workers=20)
     print(f"finished loading {train_size} train lines")
@@ -64,7 +64,7 @@ def do_training(model, save_path):
     torch.manual_seed(seed)
     print(f"seed: {seed}")
 
-    threshold = 0.61
+    threshold = 0.62
 
     for it in range(epochs):
         loss = train_one_cycle(model, train_loader, loss_fn, optimizer)
@@ -115,17 +115,17 @@ def do_validation(model):
 save_path = "my_model_4"
 test_out = "test-results.txt"
 
-# model = Model().to(device)
-# do_training(model, save_path)
-# do_tests(model, test_out)
+model = Model().to(device)
+do_training(model, save_path)
+do_tests(model, test_out)
 
-model = Model.Load(save_path)
+# model = Model.Load(save_path)
 # model = Model2()
 # model.load_state_dict(torch.load("my-model"))
-model.eval()
-print("finished loading model")
-do_validation(model)
-do_tests(model, test_out)
+# model.eval()
+# print("finished loading model")
+# do_validation(model)
+# do_tests(model, test_out)
 
 
 # repeats = 10

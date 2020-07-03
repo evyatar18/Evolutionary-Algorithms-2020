@@ -1,6 +1,6 @@
 import torch
 import numpy
-from const import num_params, length_params
+from const import num_params, length_params, line_length, line_inputs
 
 
 class DataGetter:
@@ -80,18 +80,19 @@ def get_data(file_name, max_len=0):
 def parse_line(line):
     # line = line.replace(" ", "")
     params = line.split(",")
-    assert len(params) == 121, "wrong param number when reading data! Is currently " + str(len(params))
+    assert len(params) == line_length, "wrong param number when reading data! Is currently " + str(len(params))
 
-    data = list(map(float, params[1 + (120 - num_params):]))
+    data = list(map(float, params[1 + (line_inputs - num_params):]))
     # data = (data - data.min()) / (data.max() - data.min())
 
-    avg_0 = float(numpy.average(data[::2]))
-    std_0 = float(numpy.std(data[::2]))
-
-    data = [data[i] - 100 if i % 2 else (data[i] - avg_0) / std_0 for i in range(len(data))]
-    data = list(map(float, data))
-    data.append(avg_0)
-    data.append(std_0)
+    # avg_0 = float(numpy.average(data[::2]))
+    # std_0 = float(numpy.std(data[::2]))
+    #
+    # data = [data[i] - 100 if i % 2 else (data[i] - avg_0) / std_0 for i in range(len(data))]
+    # data = list(map(float, data))
+    # data.append(avg_0)
+    # data.append(std_0)
+    # data += [float(0.0)] * 2
 
     label = 0
 
